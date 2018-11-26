@@ -99,8 +99,8 @@ int log_msg(const char *fmt, ...);
     printd(INFO"Leaving thread %s[pid: %u] ...\n", __FUNCTION__, getpid())
 
 #else    /* ================ CLOSE log. ================ */
-#define printd(fmt, args...) 
-#define perrord(fmt) 
+#define printd(fmt, args...)
+#define perrord(fmt)
 #define leaving_thread()
 #define entering_thread()
 #endif

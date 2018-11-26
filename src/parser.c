@@ -23,8 +23,8 @@ static const char *get_next_line(const char *str)
 
     while (*str) {
         if ((*str == '\r' && *(str + 1) == '\n' && *(str + 2) == '\r' && *(str + 3) == '\n') ||
-            (*str == '\r' && *(str + 1) == '\r') ||
-            (*str == '\n' && *(str + 1) == '\n')) {
+                (*str == '\r' && *(str + 1) == '\r') ||
+                (*str == '\n' && *(str + 1) == '\n')) {
             break;
         } else if (*str == '\r' && *(str + 1) == '\n') {
             line = str + 2;

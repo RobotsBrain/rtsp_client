@@ -1,10 +1,3 @@
-/*********************************************************************
- * File Name    : librtspcli.h
- * Description  : Interface to user layer.
- * Author       : Hu Lizhen
- * Create Date  : 2012-12-21
- ********************************************************************/
-
 #ifndef __LIBRTSPCLI_H__
 #define __LIBRTSPCLI_H__
 
@@ -91,7 +84,10 @@ int chn_playing(unsigned long usr_id);
  */
 typedef int (*store_frm_t)(struct chn_info *chnp, struct frm_info *frmp);
 
+
 int init_rtsp_cli(store_frm_t store_frm);
+
+
 void deinit_rtsp_cli(void);
 
 

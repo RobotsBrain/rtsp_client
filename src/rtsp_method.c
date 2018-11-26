@@ -141,7 +141,7 @@ int send_method_options(struct rtsp_sess *sessp)
     struct rtsp_req *req = NULL;
     int ret = 0;
 
-	sessp->handling_state = HANDLING_STATE_DOING;
+    sessp->handling_state = HANDLING_STATE_DOING;
 
     /* RTSP request */
     req = alloc_rtsp_req(RTSP_METHOD_OPTIONS, sess_cseq(sessp));
@@ -168,7 +168,7 @@ int send_method_describe(struct rtsp_sess *sessp)
     if (!sessp->supported_method[RTSP_METHOD_DESCRIBE].supported) {
         return 0;
     }
-	sessp->handling_state = HANDLING_STATE_DOING;
+    sessp->handling_state = HANDLING_STATE_DOING;
 
     /* RTSP request */
     req = alloc_rtsp_req(RTSP_METHOD_DESCRIBE, sess_cseq(sessp));
@@ -328,7 +328,7 @@ int send_method_setup(struct rtsp_sess *sessp)
     if (!sessp->supported_method[RTSP_METHOD_SETUP].supported) {
         return 0;
     }
-	sessp->handling_state = HANDLING_STATE_DOING;
+    sessp->handling_state = HANDLING_STATE_DOING;
 
     /* RTSP request */
     req = alloc_rtsp_req(RTSP_METHOD_SETUP, sess_cseq(sessp));
@@ -371,7 +371,7 @@ int send_method_play(struct rtsp_sess *sessp)
     if (!sessp->supported_method[RTSP_METHOD_PLAY].supported) {
         return 0;
     }
-	sessp->handling_state = HANDLING_STATE_DOING;
+    sessp->handling_state = HANDLING_STATE_DOING;
 
     /* RTSP request */
     req = alloc_rtsp_req(RTSP_METHOD_PLAY, sess_cseq(sessp));
@@ -397,7 +397,7 @@ int send_method_pause(struct rtsp_sess *sessp)
     if (!sessp->supported_method[RTSP_METHOD_PAUSE].supported) {
         return 0;
     }
-	sessp->handling_state = HANDLING_STATE_DOING;
+    sessp->handling_state = HANDLING_STATE_DOING;
     return 0;
 }
 
@@ -406,7 +406,7 @@ int send_method_get_parameter(struct rtsp_sess *sessp)
     if (!sessp->supported_method[RTSP_METHOD_GET_PARAMETER].supported) {
         return 0;
     }
-	sessp->handling_state = HANDLING_STATE_DOING;
+    sessp->handling_state = HANDLING_STATE_DOING;
     return 0;
 }
 
@@ -415,7 +415,7 @@ int send_method_set_parameter(struct rtsp_sess *sessp)
     if (!sessp->supported_method[RTSP_METHOD_SET_PARAMETER].supported) {
         return 0;
     }
-	sessp->handling_state = HANDLING_STATE_DOING;
+    sessp->handling_state = HANDLING_STATE_DOING;
     return 0;
 }
 
@@ -424,7 +424,7 @@ int send_method_teardown(struct rtsp_sess *sessp)
     struct rtsp_req *req = NULL;
     int ret = 0;
 
-	sessp->handling_state = HANDLING_STATE_DOING;
+    sessp->handling_state = HANDLING_STATE_DOING;
 
     /* RTSP request */
     req = alloc_rtsp_req(RTSP_METHOD_TEARDOWN, sess_cseq(sessp));

@@ -38,9 +38,9 @@ int log_msg(const char *fmt, ...)
         ptr = fmt;
     }
     if (*ptr == '<' &&       /* Found '<' */
-        *(ptr + 2) == '>' && /* Found '>' */
-        *(ptr + 1) >= '0' &&
-        *(ptr + 1) <= '7') {
+            *(ptr + 2) == '>' && /* Found '>' */
+            *(ptr + 1) >= '0' &&
+            *(ptr + 1) <= '7') {
         level = *(ptr + 1) - '0';
         ptr += 3;
     }

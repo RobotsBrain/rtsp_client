@@ -74,25 +74,25 @@ struct rtsp_cli {
 /* RTP header. */
 struct rtp_hdr {
 #ifdef BIGENDIAN
-	unsigned char v:2;          /* protocol version */
-	unsigned char p:1;         	/* padding flag */
-	unsigned char x:1;         	/* header extension flag */
-	unsigned char cc:4;       	/* CSRC count */
-	unsigned char m:1;         	/* marker bit */
-	unsigned char pt:7;        	/* payload type */
+    unsigned char v:2;          /* protocol version */
+    unsigned char p:1;         	/* padding flag */
+    unsigned char x:1;         	/* header extension flag */
+    unsigned char cc:4;       	/* CSRC count */
+    unsigned char m:1;         	/* marker bit */
+    unsigned char pt:7;        	/* payload type */
 #else
-	unsigned char cc:4;
-	unsigned char x:1;
-	unsigned char p:1;
-	unsigned char v:2;
-	unsigned char pt:7;
-	unsigned char m:1;
+    unsigned char cc:4;
+    unsigned char x:1;
+    unsigned char p:1;
+    unsigned char v:2;
+    unsigned char pt:7;
+    unsigned char m:1;
 #endif
-	unsigned short seq;			/* sequence number */
-	unsigned int   ts;          /* timestamp */
-	unsigned int   ssrc;        /* synchronization source */
+    unsigned short seq;			/* sequence number */
+    unsigned int   ts;          /* timestamp */
+    unsigned int   ssrc;        /* synchronization source */
 #if 0
-	unsigned int   csrc[2];		/* optional CSRC list */
+    unsigned int   csrc[2];		/* optional CSRC list */
 #endif
 };
 
@@ -213,7 +213,7 @@ struct sdp_m {
     char proto[MAX_PROTO_SZ];
     enum rtp_pt pt;
     struct list_head sdp_a_list;
-    
+
 };
 
 /*

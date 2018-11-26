@@ -70,7 +70,7 @@ static int rtsp_msg_complete(char *data, unsigned sz)
     if (sz < 4) {
         return complete;
     }
-    
+
     if (data[sz - 2] == '\r' && data[sz - 1] == '\n') {
         complete = 1;
     } else {
@@ -139,7 +139,7 @@ static int recv_from_rtsp_sd(struct rtsp_sess *sessp)
             /* handle the new RTP/RTCP packet */
             intlvdp = (struct intlvd *)new;
             if (left >= sizeof(*intlvdp) &&
-                (left >= sizeof(*intlvdp) + ntohs(intlvdp->sz))) {
+                    (left >= sizeof(*intlvdp) + ntohs(intlvdp->sz))) {
                 printd("hulz--------->test: new[0] = %c, handle_sz = %d\n", new[0], sizeof(*intlvdp) + ntohs(intlvdp->sz));
                 handle_intlvd_data(sessp, new, sizeof(*intlvdp) + ntohs(intlvdp->sz));
                 ptr += sizeof(*intlvdp) + ntohs(intlvdp->sz);
@@ -185,10 +185,10 @@ int handle_rtsp_sd(int sd, int ev, void *arg)
 
     if (ev & EPOLLOUT) {
         type = sessp->intlvd_mode   ?
-            (DATA_TYPE_RTSP_REQ     |
-             DATA_TYPE_RTCP_V_PKT   |
-             DATA_TYPE_RTCP_A_PKT)  :
-            DATA_TYPE_RTSP_REQ;
+               (DATA_TYPE_RTSP_REQ     |
+                DATA_TYPE_RTCP_V_PKT   |
+                DATA_TYPE_RTCP_A_PKT)  :
+               DATA_TYPE_RTSP_REQ;
         if (consume_send_buf(sessp, type) < 0) {
             return -1;
         }

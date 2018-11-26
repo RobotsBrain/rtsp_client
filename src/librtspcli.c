@@ -22,8 +22,8 @@ unsigned long open_chn(char *uri, struct chn_info *chnp, int intlvd)
     unsigned short port = DFL_RTSP_PORT;
 
     if (strlen(uri) >= MAX_URI_SZ||
-        intlvd < 0 || intlvd > 1 ||
-        !chnp) {
+            intlvd < 0 || intlvd > 1 ||
+            !chnp) {
         printd(ERR "Wrong server address or channel information!\n");
         return 0;
     }

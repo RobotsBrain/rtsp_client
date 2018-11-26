@@ -93,8 +93,8 @@ static int single_step(struct rtsp_sess *sessp)
     /* keepalive RTSP session */
     now = time_now();
     if ((sessp->rtsp_state == RTSP_STATE_PLAYING) &&
-        (now < sessp->last_keepalive || (now - sessp->last_keepalive >=
-                                         KEEPALIVE_INTVL * MILLION))) {
+            (now < sessp->last_keepalive || (now - sessp->last_keepalive >=
+                    KEEPALIVE_INTVL * MILLION))) {
         /* check whether the session is alive */
         if (sessp->keepalive_cnt >= KEEPALIVE_CNT) {
             sessp->keepalive_cnt = 0;
@@ -133,9 +133,9 @@ static int single_step(struct rtsp_sess *sessp)
     for (i = 0; i < nfds; i++) {
         if ((sessp->ep_ev[i].events & EPOLLERR) ||
 #ifdef EPOLLRDHUP
-            (sessp->ep_ev[i].events & EPOLLRDHUP) ||
+                (sessp->ep_ev[i].events & EPOLLRDHUP) ||
 #endif
-            (sessp->ep_ev[i].events & EPOLLHUP)) {
+                (sessp->ep_ev[i].events & EPOLLHUP)) {
             printd(WARNING "epoll_wait() error occured on this fd[%d]\n",
                    sessp->ep_ev[i].events);
             continue;
@@ -434,12 +434,12 @@ static int run_rtsp_state_machine(struct rtsp_sess *sessp, struct rtsp_resp *res
         if (i == 2) {
             sessp->rtsp_state = RTSP_STATE_READY;
         }
-        
+
         if (!sessp->intlvd_mode) {
             struct sockaddr_in *tmp_sap = NULL;
             for (i = 0; i < 2; i++) {
                 if (resp->resp_hdr.transport.rtp_cli_port ==
-                    sessp->rtp_rtcp[i].udp.rtp_port) {
+                        sessp->rtp_rtcp[i].udp.rtp_port) {
                     tmp_sap = (struct sockaddr_in *)&sessp->rtp_rtcp[i].udp.rtp_sa;
                     tmp_sap->sin_port = htons(resp->resp_hdr.transport.rtp_srv_port);
                     tmp_sap = (struct sockaddr_in *)&sessp->rtp_rtcp[i].udp.rtcp_sa;

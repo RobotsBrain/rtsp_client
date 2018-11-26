@@ -82,7 +82,7 @@ int connect_nonb(int sd, const struct sockaddr *sap, socklen_t salen, int timeou
     socklen_t len;
     fd_set rset, wset;
     struct timeval tv;
-    
+
     flags = fcntl(sd, F_GETFL, 0);
     if (flags < 0) {
         perrord(ERR "fcntl [F_GETFL] error");
@@ -141,7 +141,7 @@ done:
 
 /**
  * This will add specified @ev to the epoll events.
- * 
+ *
  * @ev: Generally, we provide EPOLLIN, EPOLLOUT, EPOLLET for the caller.
  */
 int monitor_sd_event(int ep_fd, int fd, unsigned int ev)
@@ -159,7 +159,7 @@ int monitor_sd_event(int ep_fd, int fd, unsigned int ev)
 
 /**
  * This will modify specified @ev to the epoll events.
- * 
+ *
  * @ev: Generally, we provide EPOLLIN, EPOLLOUT, EPOLLET for the caller.
  */
 int update_sd_event(int ep_fd, int fd, unsigned int ev)
