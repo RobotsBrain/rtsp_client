@@ -1,10 +1,10 @@
 #ifndef __RTSP_CLI_H__
 #define __RTSP_CLI_H__
 
-
-#include <pthread.h>
 #include <netinet/in.h>
 #include <sys/epoll.h>
+#include <pthread.h>
+
 #include "list.h"
 #include "util.h"
 #include "librtspcli.h"
@@ -14,19 +14,19 @@
 
 
 #define RTSP_VER        "RTSP/1.0" /* RTSP version. */
-#define RTSP_CLIENT     "Zmodo RTSP Client"
+#define RTSP_CLIENT     "RTSP Client"
 #define CRLF            "\r\n"
 
-#define KEEPALIVE_INTVL     3   /* keepalive interval, second(s) */
-#define KEEPALIVE_CNT       3   /* max un-responsed keepalive message number */
+#define KEEPALIVE_INTVL         3   /* keepalive interval, second(s) */
+#define KEEPALIVE_CNT           3   /* max un-responsed keepalive message number */
 
-#define EPOLL_MAX_EVS   128       /* max epoll events */
+#define EPOLL_MAX_EVS           128       /* max epoll events */
 
 /* Max URI size, example like: `rtsp://172.18.16.133:10554/av0_0'. */
-#define MAX_URI_SZ      256
+#define MAX_URI_SZ              256
 
 /* Max RTSP version size, example like: `RTSP/1.0'. */
-#define MAX_VER_SZ      16
+#define MAX_VER_SZ              16
 
 /* Max date size, example like: `Date: 25 Dec 2012 12:34:56 GMT'. */
 #define MAX_DATE_SZ             64
@@ -45,11 +45,11 @@
 #define MAX_PROTO_SZ            16
 
 
-#define RECV_BUF_SZ     (100 * 1024)
+#define RECV_BUF_SZ             (100 * 1024)
 
-#define RTSP_SD_DFL_EV      (EPOLLIN | EPOLLET)
-#define RTP_SD_DFL_EV       (EPOLLIN)
-#define RTCP_SD_DFL_EV      (EPOLLIN)
+#define RTSP_SD_DFL_EV          (EPOLLIN | EPOLLET)
+#define RTP_SD_DFL_EV           (EPOLLIN)
+#define RTCP_SD_DFL_EV          (EPOLLIN)
 
 /* RTSP state */
 enum rtsp_state {
@@ -121,6 +121,7 @@ struct rtsp_req {
         char uri[MAX_URI_SZ];
         char ver[MAX_VER_SZ];
     } req_line;
+
     struct req_hdr {
         unsigned int cseq;
         unsigned long long sess_id;
@@ -139,6 +140,7 @@ struct rtsp_resp {
         enum status_code code;
         char reason[MAX_REASON_SZ];
     } resp_line;
+
     struct resp_hdr {
         unsigned int cseq;
         unsigned long long sess_id;
@@ -146,6 +148,7 @@ struct rtsp_resp {
         char public[MAX_PUBLIC_SZ];
         char content_type[MAX_CONTENT_TYPE_SZ];
         unsigned int content_length;
+
         struct resp_transport {
             int intlvd_mode;
             char rtp_chn;
@@ -156,6 +159,7 @@ struct rtsp_resp {
             unsigned short rtcp_srv_port;
         } transport;
     } resp_hdr;
+
     struct sdp_info *sdp_info;      /* After parsed the method `DESCRIBE',
                                      * the sdp_info will be hung to struct rtsp_sess. */
 };
@@ -266,6 +270,7 @@ struct rtsp_sess *create_rtsp_sess(char *uri, struct sockaddr_in *srv_addrp,
 void destroy_rtsp_sess(struct rtsp_sess *sessp);
 
 struct rtsp_req *alloc_rtsp_req(enum rtsp_method method, unsigned int cseq);
+
 void free_rtsp_req(struct rtsp_req *req);
 
 int handle_rtsp_resp(struct rtsp_sess *sessp, const char *msg, unsigned int sz);

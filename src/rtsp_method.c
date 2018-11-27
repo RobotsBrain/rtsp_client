@@ -25,7 +25,7 @@ static int produce_rtsp_req(struct rtsp_sess *sessp, struct rtsp_req *req)
 #define MOVE_FORWARD() do {                                         \
         left -= strlen(line);                                       \
         if (left < 0)  {                                            \
-            printd("MOVE_FORWARD failed when parsing request.\n");  \
+            printd("failed when parsing request.\n");  \
             return -1;                                              \
         }                                                           \
         line += strlen(line);                                       \
@@ -64,26 +64,34 @@ static int produce_rtsp_req(struct rtsp_sess *sessp, struct rtsp_req *req)
     switch (req->req_line.method) {
     case RTSP_METHOD_OPTIONS:
         break;
+
     case RTSP_METHOD_DESCRIBE:
         MOVE_FORWARD();
         snprintf(line, left, "Accept: %s"CRLF, req->req_hdr.accept);
         break;
+
     case RTSP_METHOD_SETUP:
         MOVE_FORWARD();
         snprintf(line, left, "Transport: %s"CRLF, req->req_hdr.transport);
         break;
+
     case RTSP_METHOD_PLAY:
         MOVE_FORWARD();
         snprintf(line, left, "Range: %s"CRLF, req->req_hdr.range);
         break;
+
     case RTSP_METHOD_PAUSE:
         break;
+
     case RTSP_METHOD_GET_PARAMETER:
         break;
+
     case RTSP_METHOD_SET_PARAMETER:
         break;
+
     case RTSP_METHOD_TEARDOWN:
         break;
+
     default:
         printd("Undefined RTSP method[%d]\n", req->req_line.method);
         free_send_buf(sendp);
@@ -397,7 +405,9 @@ int send_method_pause(struct rtsp_sess *sessp)
     if (!sessp->supported_method[RTSP_METHOD_PAUSE].supported) {
         return 0;
     }
+
     sessp->handling_state = HANDLING_STATE_DOING;
+
     return 0;
 }
 

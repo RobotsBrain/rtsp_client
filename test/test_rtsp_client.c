@@ -14,15 +14,18 @@
 
 static void signal_handler(int signo)
 {
-    switch (signo) {
+    switch(signo) {
     case SIGINT:
         exit(0);
         break;
+
     case SIGPIPE:
         break;
+
     default:
         break;
     }
+
     return;
 }
 
@@ -30,6 +33,7 @@ static void init_signals(void)
 {
     signal(SIGINT, signal_handler);
     signal(SIGPIPE, signal_handler);
+
     return;
 }
 
@@ -61,25 +65,39 @@ static int store_frm(struct chn_info *chnp, struct frm_info *frmp)
 
 int main(int argc, char *argv[])
 {
+    int res = -1;
+    char url[128] = {0};
     unsigned long usr_id = 0;
     struct chn_info chn_info;
 
     init_signals();
 
+    while((res = getopt(argc, argv, "?u:h")) != -1) {
+        switch(res) {
+        case 'u':
+            strcpy(url, optarg);
+            break;
+
+        case 'h':
+        default:
+            // usage(argv[0]);
+            return -1;
+        }
+    }
+
     if (init_rtsp_cli(store_frm) < 0) {
         return -1;
     }
 
-    /* remote channel information */
     memset(&chn_info, 0, sizeof(chn_info));
+
     chn_info.frm_hdr_sz = 0;
     chn_info.usr_data = NULL;
-    usr_id = open_chn("rtsp://172.18.16.158:10554/udp/av0_0", &chn_info, 0);
+    usr_id = open_chn(url, &chn_info, 0);
     if (!usr_id) {
         return -1;
     }
 
-//    close_chn(usr_id);
     while (1) {
         sleep(3);
     }

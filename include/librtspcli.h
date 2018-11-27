@@ -36,16 +36,16 @@ enum chn_type {
  * @usr_data:   store user data, may be used when nessary.
  */
 struct chn_info {
-    int local_chn;              /* local channel number */
-    unsigned frm_hdr_sz;
-    void *usr_data;
+    int         local_chn;              /* local channel number */
+    unsigned    frm_hdr_sz;
+    void*       usr_data;
 };
 
 /* frame information used for getting frame */
 struct frm_info {
-    char *frm_buf;              /* frame buffer: store pure av data */
-    unsigned frm_sz;        /* frame size */
-    enum frm_type frm_type;     /* frame type */
+    char*           frm_buf;              /* frame buffer: store pure av data */
+    unsigned        frm_sz;        /* frame size */
+    enum frm_type   frm_type;     /* frame type */
 };
 
 /**

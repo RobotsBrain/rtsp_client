@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <pthread.h>
 #include <sys/epoll.h>
+#include <pthread.h>
+#include <stdio.h>
 
 #include "log.h"
 #include "util.h"
@@ -12,8 +12,8 @@
 #include "parser.h"
 
 
-#define CONN_TIMEOUT    5
-#define RECONN_INTERVAL 5
+#define CONN_TIMEOUT        5
+#define RECONN_INTERVAL     5
 
 
 /**
@@ -77,9 +77,6 @@ static void start_playing(struct rtsp_sess *sessp)
     return;
 }
 
-/**
- * Main loop of RTSP session will excute this in each loop.
- */
 static int single_step(struct rtsp_sess *sessp)
 {
     int i = 0;
@@ -107,22 +104,23 @@ static int single_step(struct rtsp_sess *sessp)
         sessp->keepalive_cnt++;
     }
 
-    if (check_send_queue(sessp) < 0) {
+    if(check_send_queue(sessp) < 0) {
         return -1;
     }
 
     /* Wait event notifications. */
-    do {
+    do{
         nfds = epoll_wait(sessp->ep_fd, sessp->ep_ev,
                           EPOLL_MAX_EVS, KEEPALIVE_INTVL * THOUSAND);
-    } while (nfds < 0 && errno == EINTR);
-    if (nfds < 0) {
+    }while(nfds < 0 && errno == EINTR);
+
+    if(nfds < 0) {
         perrord(ERR "epoll_wait() for listen socket error");
         return -1;
     }
 
     /* time to teardown the session? */
-    if (sessp->todo == RTSP_METHOD_TEARDOWN) {
+    if(sessp->todo == RTSP_METHOD_TEARDOWN) {
         /* wait until all buffer in queue are sent out*/
         if (list_empty(&sessp->send_queue)) {
             sessp->enable = 0;
@@ -130,7 +128,7 @@ static int single_step(struct rtsp_sess *sessp)
     }
 
     /* Handle the sockets which there's any event occured. */
-    for (i = 0; i < nfds; i++) {
+    for(i = 0; i < nfds; i++) {
         if ((sessp->ep_ev[i].events & EPOLLERR) ||
 #ifdef EPOLLRDHUP
                 (sessp->ep_ev[i].events & EPOLLRDHUP) ||
@@ -184,6 +182,7 @@ static void cleanup_before_reconn(struct rtsp_sess *sessp)
     sessp->last_keepalive = 0;
 
     freez(sessp->sdp_info);
+
     return;
 }
 
@@ -228,31 +227,34 @@ static void *rtsp_sess_thrd(void *arg)
         if (set_block_mode(sessp->rtsp_sock.sd, 0) < 0) {
             goto rtn;
         }
+
         sessp->rtsp_sock.arg = sessp;
         sessp->rtsp_sock.handler = handle_rtsp_sd;
         sessp->rtsp_sock.ev = RTSP_SD_DFL_EV;
-        if (monitor_sd_event(sessp->ep_fd, sessp->rtsp_sock.sd,
+
+        if(monitor_sd_event(sessp->ep_fd, sessp->rtsp_sock.sd,
                              sessp->rtsp_sock.ev) < 0) {
             goto rtn;
         }
 
-        /* The main loop of RTSP session. */
-        while (sessp->enable) {
+        while(sessp->enable) {
             if (reconn) {
                 printd(INFO "Reconnect after %d seconds ...\n", RECONN_INTERVAL);
                 cleanup_before_reconn(sessp);
                 sleep(RECONN_INTERVAL);
                 break;
             }
-            if (single_step(sessp) < 0) {
+
+            if(single_step(sessp) < 0) {
                 reconn = 1;
             }
         }
-    } while (sessp->enable && reconn);
+    }while(sessp->enable && reconn);
 
 rtn:
     destroy_rtsp_sess(sessp);
     leaving_thread();
+
     return NULL;
 }
 
@@ -272,6 +274,7 @@ struct rtsp_sess *create_rtsp_sess(char *uri, struct sockaddr_in *srv_addrp,
     /* Initialize struct rtsp_sess. */
     sessp->rtsp_sock.sd = -1;
     sessp->ep_fd = -1;
+
     for (i = 0; i < 2; i++) {
         sessp->rtp_rtcp[i].udp.rtp_sock.sd = -1;
         sessp->rtp_rtcp[i].udp.rtcp_sock.sd = -1;
@@ -282,9 +285,12 @@ struct rtsp_sess *create_rtsp_sess(char *uri, struct sockaddr_in *srv_addrp,
     sessp->handling_state = HANDLING_STATE_INIT;
     sessp->todo = RTSP_METHOD_NONE;
     sessp->cur_cseq = 0;
+
     memcpy(&sessp->srv_addr, srv_addrp, sizeof(*srv_addrp));
     memcpy(&sessp->chn_info, chnp, sizeof(*chnp));
+
     sessp->intlvd_mode = intlvd;
+
     INIT_LIST_HEAD(&sessp->send_queue);
 
     strncpy(sessp->uri, uri, sizeof(sessp->uri) - 1);
@@ -366,6 +372,7 @@ void destroy_rtsp_sess(struct rtsp_sess *sessp)
     freez(sessp->frm_info.frm_buf);
     freez(sessp->last_data.buf);
     freez(sessp);
+
     return;
 }
 
@@ -419,9 +426,11 @@ static int run_rtsp_state_machine(struct rtsp_sess *sessp, struct rtsp_resp *res
             }
         }
         break;
+
     case RTSP_METHOD_DESCRIBE:
         sessp->sdp_info = resp->sdp_info;
         break;
+
     case RTSP_METHOD_SETUP:
         /* All media sessions were setup? */
         for (i = 0; i < 2; i++) {
@@ -453,17 +462,23 @@ static int run_rtsp_state_machine(struct rtsp_sess *sessp, struct rtsp_resp *res
             }
         }
         break;
+
     case RTSP_METHOD_PLAY:
         sessp->rtsp_state = RTSP_STATE_PLAYING;
         break;
+
     case RTSP_METHOD_PAUSE:
         break;
+
     case RTSP_METHOD_GET_PARAMETER:
         break;
+
     case RTSP_METHOD_SET_PARAMETER:
         break;
+
     case RTSP_METHOD_TEARDOWN:
         break;
+
     default:
         printd("Unsupported RTSP method[%d]!\n", sessp->todo);
         return -1;
@@ -472,15 +487,12 @@ static int run_rtsp_state_machine(struct rtsp_sess *sessp, struct rtsp_resp *res
     return 0;
 }
 
-/**
- * Parse the RTSP response message, and run the RTSP state machine.
- */
 int handle_rtsp_resp(struct rtsp_sess *sessp, const char *msg, unsigned int sz)
 {
     struct rtsp_resp *resp = NULL;
 
-    resp = mallocz(sizeof(*resp));
-    if (!resp) {
+    resp = mallocz(sizeof(struct rtsp_resp));
+    if(resp == NULL) {
         printd("Allocate memory for struct rtsp_resp failed!\n");
         return -1;
     }
@@ -492,5 +504,8 @@ int handle_rtsp_resp(struct rtsp_sess *sessp, const char *msg, unsigned int sz)
     sessp->handling_state = HANDLING_STATE_INIT;
 
     freez(resp);
+
     return 0;
 }
+
+

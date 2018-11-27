@@ -7,7 +7,7 @@
 #define RTSP_MSG_SZ     (100 * 1024)
 
 
-#define LOG_SWITCH 0              /* log on or off */
+#define LOG_SWITCH 1              /* log on or off */
 #define LOG_COLOR 1               /* log color or non-color */
 #define DFL_LOG_LEVEL   LOG_DEBUG /* if not specify level, use the default one */
 #define THRESHOLD_LOG_LEVEL LOG_DEBUG /* Only log range in [THRESHOLD_LOG_LEVEL, LOG_EMERG] */

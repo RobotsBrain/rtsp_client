@@ -25,7 +25,7 @@ int log_msg(const char *fmt, ...)
     int n = 0;
 #if LOG_SWITCH
     int level = DFL_LOG_LEVEL;
-    va_list ap = NULL;
+    va_list ap;
     const char *ptr = NULL;
     const char *log_fmt = NULL;
 

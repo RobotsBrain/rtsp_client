@@ -23,6 +23,7 @@ enum media_type {
 
 
 struct rtsp_sess;
+
 int handle_rtp_pkt(struct rtsp_sess *sessp, enum media_type media,
                    char *data, unsigned int sz);
 

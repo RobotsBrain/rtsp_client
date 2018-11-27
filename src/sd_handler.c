@@ -1,4 +1,5 @@
 #include <sys/epoll.h>
+#include <assert.h>
 
 #include "log.h"
 #include "util.h"
@@ -16,9 +17,10 @@ static int handle_intlvd_data(struct rtsp_sess *sessp, char *data, unsigned sz)
 {
     struct intlvd *intlvdp = NULL;
 
-    if (data[0] == '$') {       /* RTP/RTCP packet */
+    if(data[0] == '$') {       /* RTP/RTCP packet */
         if (sz > sizeof(*intlvdp)) {
             intlvdp = (struct intlvd *)data;
+
             if (ntohs(intlvdp->sz) == (sz - sizeof(*intlvdp))) {
                 switch (intlvdp->chn) {
                 case INTLVD_CHN_RTP_V:
@@ -26,16 +28,19 @@ static int handle_intlvd_data(struct rtsp_sess *sessp, char *data, unsigned sz)
                                    data + sizeof(*intlvdp),
                                    sz - sizeof(*intlvdp));
                     break;
+
                 case INTLVD_CHN_RTP_A:
                     handle_rtp_pkt(sessp, MEDIA_TYPE_AUDIO,
                                    data + sizeof(*intlvdp),
                                    sz - sizeof(*intlvdp));
                     break;
+
                 case INTLVD_CHN_RTCP_V:
                     handle_rtcp_pkt(sessp, MEDIA_TYPE_VIDEO,
                                     data + sizeof(*intlvdp),
                                     sz - sizeof(*intlvdp));
                     break;
+
                 case INTLVD_CHN_RTCP_A:
                     handle_rtcp_pkt(sessp, MEDIA_TYPE_AUDIO,
                                     data + sizeof(*intlvdp),
@@ -43,12 +48,9 @@ static int handle_intlvd_data(struct rtsp_sess *sessp, char *data, unsigned sz)
                     break;
                 }
             } else {
-#if 1
-                printd("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-----bbb--------> ntohs(intlvdp->sz) = %d, (sz - sizeof(*intlvdp)) = %d\n",
+                printd("--------> ntohs(intlvdp->sz) = %d, (sz - sizeof(*intlvdp)) = %d\n",
                        ntohs(intlvdp->sz), (sz - sizeof(*intlvdp)));
-#include <assert.h>
                 assert(ntohs(intlvdp->sz) == (sz - sizeof(*intlvdp)));
-#endif
             }
         }
     } else {                    /* RTSP response message */
@@ -99,19 +101,25 @@ static int recv_from_rtsp_sd(struct rtsp_sess *sessp)
         if (nr < 0) {
             perrord(ERR "recv() from rtsp_sd error");
         }
+
         return -1;
     }
+
+    printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~[%s, %d]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n", __FUNCTION__, __LINE__);
+    printf("%s\n", recv_buf);
+    printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~[%s, %d]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n", __FUNCTION__, __LINE__);
 
     ptr = recv_buf;
     left = nr;
     new = ptr;
 
     /* handle the data in last buf */
-    if (lastp->sz >= sizeof(*intlvdp) && lastp->buf[0] == '$') {
+    if(lastp->sz >= sizeof(*intlvdp) && lastp->buf[0] == '$') {
         intlvdp = (struct intlvd *)lastp->buf;
         if (left >= ntohs(intlvdp->sz) + sizeof(*intlvdp) - lastp->sz) {
             memcpy(lastp->buf + lastp->sz, ptr, ntohs(intlvdp->sz) + sizeof(*intlvdp) - lastp->sz);
-            printd("hulz--------->test: lastp->buf[0] = %c, lastp->sz = %d, handle_sz = %d\n", lastp->buf[0], lastp->sz, ntohs(intlvdp->sz) + sizeof(*intlvdp));
+            printd("lastp->buf[0] = %c, lastp->sz = %d, handle_sz = %d\n",
+                lastp->buf[0], lastp->sz, ntohs(intlvdp->sz) + sizeof(*intlvdp));
             handle_intlvd_data(sessp, lastp->buf, ntohs(intlvdp->sz) + sizeof(*intlvdp));
             ptr += ntohs(intlvdp->sz) + sizeof(*intlvdp) - lastp->sz;
             left -= ntohs(intlvdp->sz) + sizeof(*intlvdp) - lastp->sz;
@@ -120,6 +128,7 @@ static int recv_from_rtsp_sd(struct rtsp_sess *sessp)
         } else {
             memcpy(lastp->buf + lastp->sz, ptr, left);
             lastp->sz += left;
+
             return 0;
         }
     }
@@ -130,7 +139,7 @@ static int recv_from_rtsp_sd(struct rtsp_sess *sessp)
                 memcpy(lastp->buf + lastp->sz, new, ptr - new);
                 lastp->sz += ptr - new;
                 lastp->buf[lastp->sz] = 0;
-                printd("hulz--------->test: lastp->buf[0] = %c, lastp->sz = %d, handle_sz = %d\n", lastp->buf[0], lastp->sz, lastp->sz);
+                printd("lastp->buf[0] = %c, lastp->sz = %d, handle_sz = %d\n", lastp->buf[0], lastp->sz, lastp->sz);
                 handle_intlvd_data(sessp, lastp->buf, lastp->sz);
                 lastp->sz = 0;
                 new = ptr;
@@ -140,7 +149,7 @@ static int recv_from_rtsp_sd(struct rtsp_sess *sessp)
             intlvdp = (struct intlvd *)new;
             if (left >= sizeof(*intlvdp) &&
                     (left >= sizeof(*intlvdp) + ntohs(intlvdp->sz))) {
-                printd("hulz--------->test: new[0] = %c, handle_sz = %d\n", new[0], sizeof(*intlvdp) + ntohs(intlvdp->sz));
+                printd("new[0] = %c, handle_sz = %d\n", new[0], sizeof(*intlvdp) + ntohs(intlvdp->sz));
                 handle_intlvd_data(sessp, new, sizeof(*intlvdp) + ntohs(intlvdp->sz));
                 ptr += sizeof(*intlvdp) + ntohs(intlvdp->sz);
                 left -= sizeof(*intlvdp) + ntohs(intlvdp->sz);
@@ -159,7 +168,7 @@ static int recv_from_rtsp_sd(struct rtsp_sess *sessp)
                 lastp->sz += ptr - new;
                 if (rtsp_msg_complete(lastp->buf, lastp->sz)) {
                     lastp->buf[lastp->sz] = 0;
-                    printd("hulz--------->test: lastp->buf[0] = %c, lastp->sz = %d, handle_sz = %d\n", lastp->buf[0], lastp->sz, lastp->sz);
+                    printd("lastp->buf[0] = %c, lastp->sz = %d, handle_sz = %d\n", lastp->buf[0], lastp->sz, lastp->sz);
                     handle_intlvd_data(sessp, lastp->buf, lastp->sz);
                     lastp->sz = 0;
                 } else {
