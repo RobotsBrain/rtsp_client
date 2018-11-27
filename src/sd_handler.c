@@ -60,11 +60,6 @@ static int handle_intlvd_data(struct rtsp_sess *sessp, char *data, unsigned sz)
     return 0;
 }
 
-/**
- * @brief: Check whether it's a complete RTSP message.
- *
- * Return 1 if complete, 0 if incomplete.
- */
 static int rtsp_msg_complete(char *data, unsigned sz)
 {
     int complete = 0;
@@ -78,6 +73,7 @@ static int rtsp_msg_complete(char *data, unsigned sz)
     } else {
         complete = 0;
     }
+
     return complete;
 }
 
@@ -133,7 +129,7 @@ static int recv_from_rtsp_sd(struct rtsp_sess *sessp)
         }
     }
 
-    while (left > 0) {
+    while(left > 0) {
         if (ptr[0] == '$') {
             if (ptr != new) {
                 memcpy(lastp->buf + lastp->sz, new, ptr - new);
@@ -163,12 +159,13 @@ static int recv_from_rtsp_sd(struct rtsp_sess *sessp)
             ptr++;
             left--;
 
-            if (!left) {
+            if(!left) {
                 memcpy(lastp->buf + lastp->sz, new, ptr - new);
                 lastp->sz += ptr - new;
                 if (rtsp_msg_complete(lastp->buf, lastp->sz)) {
                     lastp->buf[lastp->sz] = 0;
-                    printd("lastp->buf[0] = %c, lastp->sz = %d, handle_sz = %d\n", lastp->buf[0], lastp->sz, lastp->sz);
+                    printd("lastp->buf[0] = %c, lastp->sz = %d, handle_sz = %d\n",
+                        lastp->buf[0], lastp->sz, lastp->sz);
                     handle_intlvd_data(sessp, lastp->buf, lastp->sz);
                     lastp->sz = 0;
                 } else {
@@ -220,6 +217,7 @@ int handle_rtp_sd(int sd, int ev, void *arg)
             break;
         }
     }
+
     if (i == 2) {
         printd(ERR "Unmatched socket descriptor!\n");
         return -1;
@@ -233,8 +231,10 @@ int handle_rtp_sd(int sd, int ev, void *arg)
             }
             return -1;
         }
+
         handle_rtp_pkt(sessp, media, recv_buf, nr);
     }
+
     return 0;
 }
 
@@ -265,5 +265,7 @@ int do_sd_handler(int sd, int ev, struct rtsp_sess *sessp)
             return -1;
         }
     }
+
     return 0;
 }
+
